@@ -15,7 +15,9 @@ function app(people){
     default:
     app(people); // restart app
     break;
+
   }
+
 }
 
 // Menu function to call once you find who you are looking for
@@ -50,6 +52,67 @@ function mainMenu(person, people){
   }
 }
 
+function getPersonFamily(person, people) {
+    var zero = 0;
+    var parentsName = "";
+    var personParents = [];
+    var parentsArray = person[zero].parents;
+    if (parentsArray.length !== zero) {
+        personParents = people.filter(function(element) {
+            if(parentsArray[0] === element.id){
+                return true;
+            } else if (parentsArray[1] === element.id) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        var n;
+        for (n in personParents) {
+            parentsName += personParents
+        }
+    } else {
+        alert("The person doesn't have any parents");
+    }
+
+
+    var parentsName = "";
+    var parentsArray = person[0].parents;
+    if (parentsArray.length === 0) {
+        alert("the person doesn't have any parents");
+    } else {
+        for (var i = 0; i < parentsArray.length; i++) {
+            for (var n = 0; n < people.length; n++) {
+                if(parentsArray[i] === people[n].id) {
+                    if(i === parentsArray.length-1 && i !== 0) {
+                        parentsName += " and " + people[n].firstName + " ";
+                        parentsName += people[n].lastName + ".";
+                    } else {
+                        parentsName += people[n].firstName + " ";
+                        parentsName += people[n].lastName;
+                }
+            }
+        }    
+    }
+    alert("Parents Name: " + parentsName);
+    getSiblings(parentsArray, people);  
+    }       
+}
+
+function getSiblings(parentsArray, people) {
+    var siblings = []
+    for (var i = 0; i < parentsArray.length; i++) {
+            siblings = people.filter(function(element){
+                if(parentsArray[i] === element.parents[0] || ){
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+    }
+    alert(siblings[0].firstName + " " + siblings[0].lastName);
+}
+
 function searchByName(people){
   var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
   var lastName = promptFor("What is the person's last name?", chars).toLowerCase();
@@ -62,12 +125,13 @@ function searchByName(people){
     }
   })
   try{
-    alert(searchResults[0].firstName + " " + searchResults[0].lastName);
+   // alert(searchResults[0].firstName + " " + searchResults[0].lastName);
   }
   catch(err){
     alert("Name entered not found in Database. Try another name or search by traits");
     app(people);
   }
+  getPersonFamily(searchResults, people);
 }
 
 // alerts a list of people
