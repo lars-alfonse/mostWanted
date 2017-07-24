@@ -1,21 +1,27 @@
+"use strict"
 /*
 Build all of your functions for displaying and gathering information below (GUI).
 */
 
 // app is the function called to start the entire application
 function app(people){
+  var person;
+  var searchResult;
   var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
   switch(searchType){
     case 'yes':
-      searchByName(people);
+        person = searchByName(people);
     break;
     case 'no':
-    // TODO: search by traits
+        searchResult = searchByTrait(people);
+        person = searchResult[0];
+
     break;
     default:
     app(people); // restart app
     break;
   }
+  mainMenu(person, people);
 }
 
 // Menu function to call once you find who you are looking for
@@ -62,7 +68,8 @@ function searchByName(people){
     }
   })
   try{
-    alert(searchResults[0].firstName + " " + searchResults[0].lastName);
+    var person = searchResults[0];
+    return person;
   }
   catch(err){
     alert("Name entered not found in Database. Try another name or search by traits");
@@ -102,4 +109,109 @@ function yesNo(input){
 // helper function to pass in as default promptFor validation
 function chars(input){
   return true; // default validation only
+}
+function searchByTrait(people){
+    var searchParameters;
+    var searchResults;
+    people = getAge(people)
+    searchParameters = getTraitSearchParameters();
+    searchResults = searchTraitFilters(searchParameters, people);
+    return searchResults;
+
+}
+function searchTraitFilters(searchParameters, people){
+    var searchResults;
+    searchResults = [];
+    var parameter;
+    var result;
+    searchResults = people.filter(function(element){
+        for(parameter in searchParameters){
+            if (searchParameters[parameter] === element[parameter] || searchParameters[parameter] === "not applicable") {
+                result = true;
+            }
+            else {
+                result = false;
+                return result;
+             }
+        }
+        return result;
+    });
+    return searchResults;
+}
+function getTraitSearchParameters(){
+    var searchParameters = {
+    }
+    searchParameters.age = getIntigerSearchParameter('age');
+    searchParameters.height = getIntigerSearchParameter('height');
+    searchParameters.weight = getIntigerSearchParameter('weight');
+    searchParameters.occupation = getStringSearchParameter('occupation');
+    searchParameters.eyeColor = getStringSearchParameter('eye color');
+    return searchParameters;
+}
+function getStringSearchParameter(parameter){
+    var userChoice = prompt("Would you like to search for " + parameter + "?", "yes or no").toLowerCase();
+    if (userChoice === "yes") {
+        var selectedParameter;
+        selectedParameter = prompt("Enter " + parameter ).toLowerCase();
+        return selectedParameter;
+    }
+    else if (userChoice === "no"){
+        return "not applicable";
+    }
+    else {
+        alert("Input not recognized. Please select yes or no ");
+        getStringSearchParameter(parameter);
+    }
+}
+function getIntigerSearchParameter(parameter){
+    var userChoice = prompt("Would you like to search for " + parameter , "yes or no").toLowerCase();
+    if (userChoice === "yes") {
+        var selectedParameter;
+        selectedParameter = Number(prompt("Enter " + parameter));
+            if (!isNaN(selectedParameter)){                                                         // this if/else statement checks to see if the user entered a number and corrects them if not
+                return selectedParameter;
+            }
+            else{                                                                                  
+                alert("Entry Not recognized. Please enter " + parameter + " as a integer number");
+                getIntigerSearchParameter(parameter);
+            }
+    }
+    else if (userChoice === "no"){
+        return "not applicable";
+    }
+    else{
+        alert("Input not recognized. Please select yes or no ");
+        getIntigerSearchParameter(parameter);
+    }
+}
+function getAge(people){
+    people = people.map(function(element){
+        element.dob = reorderDate(element.dob);
+        element.age = subtractDates(element.dob);
+        return element;
+    })
+    return people;
+}
+function reorderDate(date){
+    var placeholder;
+    placeholder = date.split("/");
+    var year;
+    var month;
+    var day;
+    year = placeholder[2];
+    day = placeholder[1];
+    month = placeholder [0];
+    placeholder = [year, month, day];
+    var date = placeholder.join("/");
+    return date;
+}
+function subtractDates(dob){
+    var currentDate;
+    var birthday;
+    var age;
+    currentDate = new Date();
+    birthday = new Date(dob);
+    age = Math.abs(currentDate.getTime() - birthday.getTime());
+    age = Math.floor(age / 31556952000);
+    return age;
 }
