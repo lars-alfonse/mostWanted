@@ -43,7 +43,7 @@ function mainMenu(person, people){
     // TODO: get person's info
     break;
     case "family":
-    // TODO: get person's family
+        getPersonFamily(person, people);
     break;
     case "descendants":
     // TODO: get person's descendants
@@ -62,7 +62,7 @@ function getPersonFamily(person, people) {
     var zero = 0;
     var parentsName = "";
     var personParents = [];
-    var parentsArray = person[zero].parents;
+    var parentsArray = person.parents;
     if (parentsArray.length !== zero) {
         personParents = people.filter(function(element) {
             if(parentsArray[0] === element.id){
@@ -75,13 +75,14 @@ function getPersonFamily(person, people) {
         })
         var n;
         for (n in personParents) {
-            parentsName += personParents
+            parentsName += personParents[n].firstName;
+            parentsName += personParents[n].lastName;
         }
     } else {
         alert("The person doesn't have any parents");
     }
 
-
+    /*
     var parentsName = "";
     var parentsArray = person[0].parents;
     if (parentsArray.length === 0) {
@@ -102,9 +103,10 @@ function getPersonFamily(person, people) {
     }
     alert("Parents Name: " + parentsName);
     getSiblings(parentsArray, people);  
-    }       
+    } */      
 }
 
+/*
 function getSiblings(parentsArray, people) {
     var siblings = []
     for (var i = 0; i < parentsArray.length; i++) {
@@ -118,6 +120,7 @@ function getSiblings(parentsArray, people) {
     }
     alert(siblings[0].firstName + " " + siblings[0].lastName);
 }
+*/
 
 function searchByName(people){
   var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
