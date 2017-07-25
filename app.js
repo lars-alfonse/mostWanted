@@ -80,18 +80,19 @@ function getPersonFamily(person, people) {
             }
         })
         parentsName = getNames(personWithParents);
-        alert("The person parent: " + parentsName);
-        getSiblings(personParentsArray, personId, people);
+        alert("The person's parent(s): " + parentsName);
+        getPersonSiblings(personParentsArray, personId, people);
     } else {
         alert("The person doesn't have any parents");
     }
-    getCurrentSpouse(person, people);    
+    getPersonCurrentSpouse(person, people);
+    getPersonChildren(person, people);    
 }
 
 /*
 the function will loop to find the person siblings and output the results
 */
-function getSiblings(personParentsArray, personId, people) {
+function getPersonSiblings(personParentsArray, personId, people) {
     var siblings = []
     var zero = 0;
     var one = 1;
@@ -127,7 +128,7 @@ function getSiblings(personParentsArray, personId, people) {
 The function will test if the person has a sopouse and 
 loop to find the spounse then output the results. 
 */
-function getCurrentSpouse(person, people) {
+function getPersonCurrentSpouse(person, people) {
     var isNull = null;
     var personSpouse = person.currentSpouse;
     var spouseName = "";
@@ -141,13 +142,36 @@ function getCurrentSpouse(person, people) {
             }
         })
         spouseName = getNames(spouse);
-        alert("The person current spouse is: " + spouseName);
+        alert("The person's current spouse is: " + spouseName);
     } else {
         alert("Person doesn't have a spouse.");
     }
 
 }
 
+/*
+The function will loop to find if the person has any children 
+and output the results
+*/
+function getPersonChildren(person, people) {
+    var zero = 0;
+    var one = 1;
+    var personId = person.id;
+    var childrenNames = "";
+    var children = people.filter(function(element){
+        if (personId === element.parents[zero] || personId === element.parents[one]) {
+            return true;
+        } else {
+            return false;
+        }
+    })
+    if (children.length !== zero) {
+        childrenNames = getNames(children);
+        alert("The person's children: " + childrenNames);
+    } else {
+        alert("The person doesn't have any children");
+    }
+}
 
 function searchByName(people){
   var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
