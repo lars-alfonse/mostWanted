@@ -280,14 +280,14 @@ function checkSearchParameters(searchParameters){ //this function checks if enou
     var listedSearchParameters = Object.values(searchParameters);
     var count;
     count = wordCount(listedSearchParameters);
-    if(count["not applicable"] > 3) {
+    if(count["not applicable"] > 3) {   // if more than three are filled as not applicable the user is reset
         return false;
     }
     else{
         return true;
     }
 }
-function wordCount(words) {
+function wordCount(words) { //this function counts the amount of times a parameter is repeated
     var countedWords;       
     countedWords = words.reduce( (countWords, word) => {
         countWords[word] = ++countWords[word] || 1;
@@ -393,18 +393,18 @@ function searchByParentId(identification, people){ //this function filters peopl
         }
     }
     if (descendantsdescendants){
-    descendants.push(descendantsdescendants);
+    descendants = descendants.concat(descendantsdescendants);
     }
     return descendants;
 }
 function reportDescendants(descendants, person){ //this function reports if descendants are found in alert boxes
     var descendantsNames
-    descendantsNames = getNames(descendants);
+    descendantsNames = getNamesWithLinebreaks(descendants);
     if (!descendants[0]) { //checks if there are descendants
         alert(person.firstName + ' ' + person.lastName + " has no descendants on file.");
     }
     else{
-        alert(person.firstName + ' ' + person.lastName + " has descendants: " + descendantsNames);
+        alert(person.firstName + ' ' + person.lastName + " has descendants:\n" + descendantsNames);
     }
     return descendants;
 }
@@ -414,6 +414,14 @@ function getNames(selectedGroup){ //this function gathers names for alert boxes
         return element.firstName + " " + element.lastName
     });
     groupNames = groupNames.join("; ");
+    return groupNames;
+}
+function getNamesWithLinebreaks(selectedGroup){ //this function gathers names for alert boxes
+    var groupNames;
+    groupNames = selectedGroup.map(function(element){
+        return element.firstName + " " + element.lastName
+    });
+    groupNames = groupNames.join(";\n");
     return groupNames;
 }
 function narrowDownResults(searchResults, people){ //this function allows for the user to select one out of a list of search results
@@ -430,12 +438,12 @@ function narrowDownResults(searchResults, people){ //this function allows for th
     }
     return userChoice;
 }
-function getPersonInfo(person){
+function getPersonInfo(person){ //this function displays found persons info
     var personInfo;
     personInfo = sortInfo(person);
-    alert("Found person information: " + personInfo);
+    alert("Found person information:\n" + personInfo);
 }
-function sortInfo(person){
+function sortInfo(person){ //this function organizes info for getPersonInfo
     var trait;
     var personInfo = [];
     var traitValue;
