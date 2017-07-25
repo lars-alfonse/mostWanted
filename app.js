@@ -44,7 +44,7 @@ function mainMenu(person, people){
         getPersonFamily(person, people);
     break;
     case "descendants":
-    // TODO: get person's descendants
+        getdescendants(person, people);
     break;
     case "restart":
     app(people); // restart
@@ -177,9 +177,10 @@ function chars(input){
   return true; // default validation only
 }
 function searchByTrait(people){
+    var peopleWithAge;
     var searchParameters;
     var searchResults;
-    people = getAge(people)
+    peopleWithAge = getAge(people)
     searchParameters = getTraitSearchParameters();
     searchResults = searchTraitFilters(searchParameters, people);
     searchResults = narrowDownResults(searchResults, people);
@@ -227,7 +228,8 @@ function getStringSearchParameter(parameter){
     }
     else {
         alert("Input not recognized. Please select yes or no ");
-        getStringSearchParameter(parameter);
+       selectedParameter =  getStringSearchParameter(parameter);
+       return selectedParameter;
     }
 }
 function getIntigerSearchParameter(parameter){
@@ -240,7 +242,8 @@ function getIntigerSearchParameter(parameter){
             }
             else{                                                                                  
                 alert("Entry Not recognized. Please enter " + parameter + " as a integer number");
-                getIntigerSearchParameter(parameter);
+                selectedParameter = getIntigerSearchParameter(parameter);
+                return selectedParameter;
             }
     }
     else if (userChoice === "no"){
@@ -248,16 +251,18 @@ function getIntigerSearchParameter(parameter){
     }
     else{
         alert("Input not recognized. Please select yes or no ");
-        getIntigerSearchParameter(parameter);
+       selectedParameter =  getIntigerSearchParameter(parameter);
+       return selectedParameter;
     }
 }
 function getAge(people){
-    people = people.map(function(element){
+    var peopleWithAge
+    peopleWithAge = people.map(function(element){
         element.dob = reorderDate(element.dob);
         element.age = subtractDates(element.dob);
         return element;
     })
-    return people;
+    return peopleWithAge;
 }
 function reorderDate(date){
     var placeholder;
@@ -282,17 +287,61 @@ function subtractDates(dob){
     age = Math.floor(age / 31556952000);
     return age;
 }
-function getDecendents(person, People){
-
+function getdescendants(person, people){
+    var descendants;
+    var identification;
+    identification = person.id;
+    descendants = [];
+    descendants = searchByParentId(identification, people);
+    console.log(descendants);
+    reportDescendants(descendants, person);
+    return descendants;
+}
+function searchByParentId(identification, people){
+    var descendants;
+    descendants = people.filter(function(element){
+        if (element.parents[0] === identification || element.parents[1] === identification){
+            return true;
+        }
+        else {
+            return false;
+        }
+    });
+    if (descendants.length > 0) {
+        var descendantsdescendants;
+        for (var i = 0; i < descendants.length; i++) {
+            descendantsdescendants = searchByParentId(descendants[i].id, people);
+        }
+    }
+    if (descendantsdescendants){
+    descendants.push(descendantsdescendants);
+    }
+    return descendants;
+}
+function reportDescendants(descendants, person){
+    var descendantsNames
+    descendantsNames = getNames(descendants);
+    if (!descendants[0]) {
+        alert(person.firstName + ' ' + person.lastName + " has no descendants on file.");
+    }
+    else{
+        alert(person.firstName + ' ' + person.lastName + " has descendants: " + descendantsNames);
+    }
+    return descendants;
+}
+function getNames(selectedGroup){
+    var groupNames;
+    groupNames = selectedGroup.map(function(element){
+        return element.firstName + " " + element.lastName
+    });
+    groupNames = groupNames.join("; ");
+    return groupNames;
 }
 function narrowDownResults(searchResults, people){
     var resultNames;
     var userChoice;
     if (searchResults.length > 1){
-        resultNames = searchResults.map(function(element){
-            return element.firstName + ", " + element.lastName;
-    });
-        resultNames = resultNames.join("; ")
+        resultNames = getNames(searchResults);
         alert("Several people found please type the name of the individual you are searching for");
         alert("People found: " + resultNames);
         userChoice = searchByName(people);
