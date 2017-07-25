@@ -58,25 +58,38 @@ function mainMenu(person, people){
   }
 }
 
+/*
+The function will find if the person has any parents, collect the their parents object
+then output the parents first and last name
+*/
 function getPersonFamily(person, people) {
     var zero = 0;
+    var one = 1;
     var parentsName = "";
-    var personParents = [];
+    var personWithParents = [];
     var parentsArray = person.parents;
     if (parentsArray.length !== zero) {
-        personParents = people.filter(function(element) {
-            if(parentsArray[0] === element.id){
+        personWithParents = people.filter(function(element) {
+            if(parentsArray[zero] === element.id){
                 return true;
-            } else if (parentsArray[1] === element.id) {
+            } else if (parentsArray[one] === element.id) {
                 return true;
             } else {
                 return false;
             }
         })
         var n;
-        for (n in personParents) {
-            parentsName += personParents[n].firstName;
-            parentsName += personParents[n].lastName;
+        var counter = 0;
+        for (n in personWithParents) {
+            if (counter === personWithParents.length-one && counter !== zero) {
+                parentsName += " and " + personWithParents[n].firstName + " ";
+                parentsName += personWithParents[n].lastName + ".";
+                alert("The person parent: " + parentsName);
+            } else {
+                parentsName += personWithParents[n].firstName + " ";
+                parentsName += personWithParents[n].lastName;
+            }
+        counter++;
         }
     } else {
         alert("The person doesn't have any parents");
