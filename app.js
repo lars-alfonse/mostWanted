@@ -128,17 +128,21 @@ function getSiblings(personParentsArray, personId, people) {
     var n;
     var counter = 0;
     var siblingsName = "";
-    for(n in siblings) {
-        if (counter === siblings.length-one && counter !== zero) {
-                siblingsName += " and " + siblings[n].firstName + " ";
-                siblingsName += siblings[n].lastName + ".";
-            } else {
-                siblingsName += siblings[n].firstName + " ";
-                siblingsName += siblings[n].lastName;
-            }
-        counter++;
+    if (siblings.length !== zero) {
+        for(n in siblings) {
+            if (counter === siblings.length-one && counter !== zero) {
+                    siblingsName += " and " + siblings[n].firstName + " ";
+                    siblingsName += siblings[n].lastName + ".";
+                } else {
+                    siblingsName += siblings[n].firstName + " ";
+                    siblingsName += siblings[n].lastName;
+                }
+            counter++;
+        }
+        alert("Siblings names: " + siblingsName);
+    } else {
+        alert("Person doesn't have siblings");
     }
-    alert("Siblings names: " + siblingsName);
 }
 
 
