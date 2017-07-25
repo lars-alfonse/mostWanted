@@ -1,22 +1,21 @@
 "use strict"
-
 function app(people){
-  var person;
-  var searchResult;
-  var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
-  switch(searchType){
-    case 'yes':
-        person = searchByName(people);
-    break;
-    case 'no':
-        searchResult = searchByTrait(people);
-        person = searchResult;
-    break;
-    default:
-    app(people);
-    break;
-  }
-  mainMenu(person, people);
+    var person;
+    var searchResult;
+    var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+    switch(searchType){
+        case 'yes':
+            person = searchByName(people);
+        break;
+        case 'no':
+            searchResult = searchByTrait(people);
+            person = searchResult;
+        break;
+        default:
+            app(people);
+        break;
+    }
+    mainMenu(person, people);
 }
 function mainMenu(person, people){
     if(!person){
@@ -26,13 +25,14 @@ function mainMenu(person, people){
     var displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
     switch(displayOption){
         case "info":
-            getPersonInfo(person);
+            getPersonInfo(person, people);
         break;
         case "family":
             getPersonFamily(person, people);
         break;
         case "descendants":
-            getdescendants(person, people);
+            getDescendants(person, people);
+            mainMenu(person, people);
         break;
         case "restart":
             app(people);
@@ -41,7 +41,7 @@ function mainMenu(person, people){
             return;
         default:
             return mainMenu(person, people);
-  }
+    }
 }
 
 /*
@@ -53,8 +53,8 @@ function getPersonFamily(person, people) {
     var siblings = getPersonSiblings(person, people);
     var currentSpouse = getPersonCurrentSpouse(person, people);
     var children = getPersonChildren(person, people); 
-
-    outputPersonFamilyResults(person, parents, siblings, currentSpouse, children);   
+    outputPersonFamilyResults(person, parents, siblings, currentSpouse, children); 
+    mainMenu(person, people);  
 }
 
 function getPersonParents(person, people) {
@@ -64,7 +64,7 @@ function getPersonParents(person, people) {
     var personWithParents = [];
     var personParentsArray = person.parents;
     if (personParentsArray.length !== zero) {
-        personWithParents = loopingForPersonWithParents(personParentsArray, people);
+        personWithParents = searchForPersonParents(personParentsArray, people);
         parentsName = getNames(personWithParents);
     } else {
         parentsName = "The person doesn't have any parents";
@@ -75,7 +75,7 @@ function getPersonParents(person, people) {
 /*
 The function will loop to full the person's parents data.
 */
-function loopingForPersonWithParents(personParentsArray, people) {
+function searchForPersonParents(personParentsArray, people) {
     var zero = 0;
     var one = 1;
     var personWithParents = [];
@@ -87,7 +87,7 @@ function loopingForPersonWithParents(personParentsArray, people) {
         } else {
              return false;
         }
-    })
+    });
     return personWithParents;
 }
 
@@ -101,7 +101,7 @@ function getPersonSiblings(person, people) {
     var personParentsArray = person.parents;
     var siblings = []
     for (var i = 0; i < personParentsArray.length; i++) {
-        var temporarySiblings = loopingForPersonSiblings(personParentsArray[i], siblings, person, people);
+        var temporarySiblings = searchForPersonSiblings(personParentsArray[i], siblings, person, people);
         for(var j = 0; j < temporarySiblings.length; j++){
             siblings.push(temporarySiblings[j]);
         }
@@ -113,7 +113,7 @@ function getPersonSiblings(person, people) {
 /*
 The function will loop to find the person siblings and return the results
 */
-function loopingForPersonSiblings(personParentsArray, siblings, person, people) {
+function searchForPersonSiblings(personParentsArray, siblings, person, people) {
     var zero = 0;
     var one = 1;
     var personId = person.id;
@@ -128,7 +128,7 @@ function loopingForPersonSiblings(personParentsArray, siblings, person, people) 
         } else {
             return false;
         }
-    })
+    });
     return temporarySiblings;
 }
 
@@ -162,7 +162,7 @@ function getPersonCurrentSpouse(person, people) {
             } else {
                 return false;
             }
-        })
+        });
         spouseName = getNames(spouse);
     } else {
         spouseName = "Person doesn't have a spouse.";
@@ -185,7 +185,7 @@ function getPersonChildren(person, people) {
         } else {
             return false;
         }
-    })
+    });
     if (children.length !== zero) {
         childrenNames = getNames(children);
     } else {
@@ -200,62 +200,51 @@ function outputPersonFamilyResults(person, parents, siblings, currentSpouse, chi
 }
 
 function searchByName(people){
-  var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
-  var lastName = promptFor("What is the person's last name?", chars).toLowerCase();
-  var searchResults = people.filter(function(element){
-    if (element.lastName.toLowerCase() === lastName && element.firstName.toLowerCase() === firstName){
-      return true;
+    var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
+    var lastName = promptFor("What is the person's last name?", chars).toLowerCase();
+    var searchResults = people.filter(function(element){
+        if (element.lastName.toLowerCase() === lastName && element.firstName.toLowerCase() === firstName){
+            return true;
+        }
+        else {
+            return false;
+        }
+    });
+    try{
+        var person = searchResults[0];
+        return person;
     }
-    else {
-      return false;
+    catch(err){
+        alert("Name entered not found in Database. Try another name or search by traits");
+        app(people);
     }
-  })
-  try{
-   // alert(searchResults[0].firstName + " " + searchResults[0].lastName);
-    var person = searchResults[0];
-    return person;
-  }
-  catch(err){
-    alert("Name entered not found in Database. Try another name or search by traits");
-    app(people);
-  }
-  getPersonFamily(searchResults, people);
+    getPersonFamily(searchResults, people);
 }
 
 // alerts a list of people
 function displayPeople(people){
-  alert(people.map(function(person){
-    return person.firstName + " " + person.lastName;
-  }).join("\n"));
+    alert(people.map(function(person){
+        return person.firstName + " " + person.lastName;
+    }).join("\n"));
 }
-
-/*function displayPerson(person){
-  // print all of the information about a person:
-  // height, weight, age, name, occupation, eye color.
-  var personInfo = "First Name: " + person.firstName + "\n";
-  personInfo += "Last Name: " + person.lastName + "\n";
-  // TODO: finish getting the rest of the information to display
-  alert(personInfo);
-}*/
 function promptFor(question, valid){
-  do{
-    var response = prompt(question).trim();
-  } while(!response || !valid(response));
-  return response;
+    do{
+        var response = prompt(question).trim();
+    } 
+    while(!response || !valid(response));
+        return response;
 }
 // helper function to pass into promptFor to validate yes/no answers
 function yesNo(input){
-  return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
+    return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
 }
 // helper function to pass in as default promptFor validation
 function chars(input){
-  return true; // default validation only
+    return true; // default validation only
 }
 function searchByTrait(people){ //function searches by trait
-    var peopleWithAge;
     var searchParameters;
     var searchResults;
-    peopleWithAge = getAge(people)
     searchParameters = getTraitSearchParameters();
     searchResults = searchTraitFilters(searchParameters, people);
     searchResults = narrowDownResults(searchResults, people);
@@ -282,23 +271,17 @@ function searchTraitFilters(searchParameters, people){ //this function uses filt
     return searchResults;
 }
 function getTraitSearchParameters(){ //this function prompts user for their search parameters
-    var searchParameters = {
-    }
-    searchParameters.age = getIntigerSearchParameter('age');
-    searchParameters.height = getIntigerSearchParameter('height');
-    searchParameters.weight = getIntigerSearchParameter('weight');
+    var searchParameters = {};
+    searchParameters.age = getIntegerSearchParameter('age');
+    searchParameters.height = getIntegerSearchParameter('height');
+    searchParameters.weight = getIntegerSearchParameter('weight');
     searchParameters.occupation = getStringSearchParameter('occupation');
     searchParameters.eyeColor = getStringSearchParameter('eye color');
-    if (checkSearchParameters(searchParameters)){
     return searchParameters;
-    }
-    else{
-        alert("Please select at least 2 search parameters.")
-        searchParameters = getTraitSearchParameters();
-        return searchParameters;
-    }
 }
-function checkSearchParameters(searchParameters){ //this function checks if enough search parameters are selected
+
+//THESE FUNCTIONS ARE TO RESTRICT PARAMETERS TO 2 MINIMUM REQUIRED!!!!!!!!
+/*function checkSearchParameters(searchParameters){ //this function checks if enough search parameters are selected
     var listedSearchParameters = Object.values(searchParameters);
     var count;
     count = wordCount(listedSearchParameters);
@@ -316,7 +299,7 @@ function wordCount(words) { //this function counts the amount of times a paramet
         return countWords;
     }, {});
     return countedWords;
-}
+}*/
 function getStringSearchParameter(parameter){ //this is how string parameters are captured
     var userChoice = prompt("Would you like to search for " + parameter + "?", "yes or no").toLowerCase();
     if (userChoice === "yes") {
@@ -329,11 +312,11 @@ function getStringSearchParameter(parameter){ //this is how string parameters ar
     }
     else {
         alert("Input not recognized. Please select yes or no ");
-       selectedParameter =  getStringSearchParameter(parameter);
-       return selectedParameter;
+        selectedParameter =  getStringSearchParameter(parameter);
+        return selectedParameter;
     }
 }
-function getIntigerSearchParameter(parameter){ // this is how number value parameters are captured
+function getIntegerSearchParameter(parameter){ // this is how number value parameters are captured
     var userChoice = prompt("Would you like to search for " + parameter , "yes or no").toLowerCase();
     if (userChoice === "yes") {
         var selectedParameter;
@@ -343,7 +326,7 @@ function getIntigerSearchParameter(parameter){ // this is how number value param
             }
             else{                                                                                  
                 alert("Entry Not recognized. Please enter " + parameter + " as a integer number");
-                selectedParameter = getIntigerSearchParameter(parameter);
+                selectedParameter = getIntegerSearchParameter(parameter);
                 return selectedParameter;
             }
     }
@@ -352,20 +335,21 @@ function getIntigerSearchParameter(parameter){ // this is how number value param
     }
     else{
         alert("Input not recognized. Please select yes or no ");
-       selectedParameter =  getIntigerSearchParameter(parameter);
+       selectedParameter =  getIntegerSearchParameter(parameter);
        return selectedParameter;
     }
 }
 function getAge(people){ // this creates a seperate array of people with their ages added
-    var peopleWithAge
+    var peopleWithAge;
+    var birthday;
     peopleWithAge = people.map(function(element){
-        element.dob = reorderDate(element.dob);
-        element.age = subtractDates(element.dob);
+        birthday = obtainBirthday(element.dob);
+        element.age = subtractDates(birthday);
         return element;
-    })
+    });
     return peopleWithAge;
 }
-function reorderDate(date){ //this function moves the date entered in data base to yyyy/mm/dd format
+function obtainBirthday(date){ //this function moves the date entered in data base to yyyy/mm/dd format
     var placeholder;
     placeholder = date.split("/");
     var year;
@@ -373,7 +357,7 @@ function reorderDate(date){ //this function moves the date entered in data base 
     var day;
     year = placeholder[2];
     day = placeholder[1];
-    month = placeholder [0];
+    month = placeholder[0] - 1;
     placeholder = [year, month, day];
     var date = placeholder.join("/");
     return date;
@@ -388,7 +372,7 @@ function subtractDates(dob){ // this function subtracts dob from todays date to 
     age = Math.floor(age / 31556952000);
     return age;
 }
-function getdescendants(person, people){ //this function gathers descendent information
+function getDescendants(person, people){ //this function gathers descendent information
     var descendants;
     var identification;
     identification = person.id;
@@ -409,13 +393,13 @@ function searchByParentId(identification, people){ //this function filters peopl
         }
     });
     if (descendants.length > 0) {
-        var descendantsdescendants;
+        var descendantsDescendants;
         for (var i = 0; i < descendants.length; i++) {
-            descendantsdescendants = searchByParentId(descendants[i].id, people); //if there are descendants it calls the function for each descendant
+            descendantsDescendants = searchByParentId(descendants[i].id, people); //if there are descendants it calls the function for each descendant
         }
     }
-    if (descendantsdescendants){
-    descendants = descendants.concat(descendantsdescendants);
+    if (descendantsDescendants){
+    descendants = descendants.concat(descendantsDescendants);
     }
     return descendants;
 }
@@ -460,10 +444,11 @@ function narrowDownResults(searchResults, people){ //this function allows for th
     }
     return userChoice;
 }
-function getPersonInfo(person){ //this function displays found persons info
+function getPersonInfo(person, people){ //this function displays found persons info
     var personInfo;
     personInfo = sortInfo(person);
     alert("Found person information:\n" + personInfo);
+    mainMenu(person, people);
 }
 function sortInfo(person){ //this function organizes info for getPersonInfo
     var trait;
