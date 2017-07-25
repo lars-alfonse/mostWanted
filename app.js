@@ -205,7 +205,7 @@ function yesNo(input){
 function chars(input){
   return true; // default validation only
 }
-function searchByTrait(people){
+function searchByTrait(people){ //function searches by trait
     var peopleWithAge;
     var searchParameters;
     var searchResults;
@@ -215,7 +215,7 @@ function searchByTrait(people){
     return searchResults;
 
 }
-function searchTraitFilters(searchParameters, people){
+function searchTraitFilters(searchParameters, people){ //this function uses filter to only have matched results
     var searchResults;
     searchResults = [];
     var parameter;
@@ -234,7 +234,7 @@ function searchTraitFilters(searchParameters, people){
     });
     return searchResults;
 }
-function getTraitSearchParameters(){
+function getTraitSearchParameters(){ //this function prompts user for their search parameters
     var searchParameters = {
     }
     searchParameters.age = getIntigerSearchParameter('age');
@@ -244,7 +244,7 @@ function getTraitSearchParameters(){
     searchParameters.eyeColor = getStringSearchParameter('eye color');
     return searchParameters;
 }
-function getStringSearchParameter(parameter){
+function getStringSearchParameter(parameter){ //this is how string parameters are captured
     var userChoice = prompt("Would you like to search for " + parameter + "?", "yes or no").toLowerCase();
     if (userChoice === "yes") {
         var selectedParameter;
@@ -260,7 +260,7 @@ function getStringSearchParameter(parameter){
        return selectedParameter;
     }
 }
-function getIntigerSearchParameter(parameter){
+function getIntigerSearchParameter(parameter){ // this is how number value parameters are captured
     var userChoice = prompt("Would you like to search for " + parameter , "yes or no").toLowerCase();
     if (userChoice === "yes") {
         var selectedParameter;
@@ -283,7 +283,7 @@ function getIntigerSearchParameter(parameter){
        return selectedParameter;
     }
 }
-function getAge(people){
+function getAge(people){ // this creates a seperate array of people with their ages added
     var peopleWithAge
     peopleWithAge = people.map(function(element){
         element.dob = reorderDate(element.dob);
@@ -292,7 +292,7 @@ function getAge(people){
     })
     return peopleWithAge;
 }
-function reorderDate(date){
+function reorderDate(date){ //this function moves the date entered in data base to yyyy/mm/dd format
     var placeholder;
     placeholder = date.split("/");
     var year;
@@ -305,7 +305,7 @@ function reorderDate(date){
     var date = placeholder.join("/");
     return date;
 }
-function subtractDates(dob){
+function subtractDates(dob){ // this function subtracts dob from todays date to get age as a number
     var currentDate;
     var birthday;
     var age;
@@ -315,7 +315,7 @@ function subtractDates(dob){
     age = Math.floor(age / 31556952000);
     return age;
 }
-function getdescendants(person, people){
+function getdescendants(person, people){ //this function gathers descendent information
     var descendants;
     var identification;
     identification = person.id;
@@ -325,7 +325,7 @@ function getdescendants(person, people){
     reportDescendants(descendants, person);
     return descendants;
 }
-function searchByParentId(identification, people){
+function searchByParentId(identification, people){ //this function filters people by the id's of person search for
     var descendants;
     descendants = people.filter(function(element){
         if (element.parents[0] === identification || element.parents[1] === identification){
@@ -338,7 +338,7 @@ function searchByParentId(identification, people){
     if (descendants.length > 0) {
         var descendantsdescendants;
         for (var i = 0; i < descendants.length; i++) {
-            descendantsdescendants = searchByParentId(descendants[i].id, people);
+            descendantsdescendants = searchByParentId(descendants[i].id, people); //if there are descendants it calls the function for each descendant
         }
     }
     if (descendantsdescendants){
@@ -346,10 +346,10 @@ function searchByParentId(identification, people){
     }
     return descendants;
 }
-function reportDescendants(descendants, person){
+function reportDescendants(descendants, person){ //this function reports if descendants are found in alert boxes
     var descendantsNames
     descendantsNames = getNames(descendants);
-    if (!descendants[0]) {
+    if (!descendants[0]) { //checks if there are descendants
         alert(person.firstName + ' ' + person.lastName + " has no descendants on file.");
     }
     else{
@@ -357,7 +357,7 @@ function reportDescendants(descendants, person){
     }
     return descendants;
 }
-function getNames(selectedGroup){
+function getNames(selectedGroup){ //this function gathers names for alert boxes
     var groupNames;
     groupNames = selectedGroup.map(function(element){
         return element.firstName + " " + element.lastName
@@ -365,14 +365,14 @@ function getNames(selectedGroup){
     groupNames = groupNames.join("; ");
     return groupNames;
 }
-function narrowDownResults(searchResults, people){
+function narrowDownResults(searchResults, people){ //this function allows for the user to select one out of a list of search results
     var resultNames;
     var userChoice;
     if (searchResults.length > 1){
         resultNames = getNames(searchResults);
         alert("Several people found please type the name of the individual you are searching for");
         alert("People found: " + resultNames);
-        userChoice = searchByName(people);
+        userChoice = searchByName(people); //call search by name function after displaying results. can search for any name;
     }
     else{
         userChoice = searchResults[0];
