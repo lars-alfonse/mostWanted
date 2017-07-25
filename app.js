@@ -407,8 +407,18 @@ function narrowDownResults(searchResults, people){ //this function allows for th
     return userChoice;
 }
 function getPersonInfo(person){
+    var personInfo;
+    personInfo = sortInfo(person);
+    alert("Found person information: " + personInfo);
+}
+function sortInfo(person){
     var trait;
+    var personInfo = [];
+    var traitValue;
     for(trait in person){
-        console.log(person.trait);
+        traitValue = person[trait];
+        personInfo.push(trait + ": " + traitValue);
     }
+    personInfo = personInfo.join(";\n");
+    return personInfo;
 }
