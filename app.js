@@ -14,7 +14,7 @@ function app(people){
     break;
     case 'no':
         searchResult = searchByTrait(people);
-        person = searchResult[0];
+        person = searchResult;
 
     break;
     default:
@@ -40,7 +40,7 @@ function mainMenu(person, people){
 
   switch(displayOption){
     case "info":
-    // TODO: get person's info
+        getPersonInfo(person);
     break;
     case "family":
         getPersonFamily(person, people);
@@ -236,6 +236,7 @@ function searchByTrait(people){ //function searches by trait
     peopleWithAge = getAge(people)
     searchParameters = getTraitSearchParameters();
     searchResults = searchTraitFilters(searchParameters, people);
+    searchResults = narrowDownResults(searchResults, people);
     return searchResults;
 
 }
@@ -266,7 +267,33 @@ function getTraitSearchParameters(){ //this function prompts user for their sear
     searchParameters.weight = getIntigerSearchParameter('weight');
     searchParameters.occupation = getStringSearchParameter('occupation');
     searchParameters.eyeColor = getStringSearchParameter('eye color');
+    if (checkSearchParameters(searchParameters)){
     return searchParameters;
+    }
+    else{
+        alert("Please select at least 2 search parameters.")
+        searchParameters = getTraitSearchParameters();
+        return searchParameters;
+    }
+}
+function checkSearchParameters(searchParameters){ //this function checks if enough search parameters are selected
+    var listedSearchParameters = Object.values(searchParameters);
+    var count;
+    count = wordCount(listedSearchParameters);
+    if(count["not applicable"] > 3) {
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+function wordCount(words) {
+    var countedWords;       
+    countedWords = words.reduce( (countWords, word) => {
+        countWords[word] = ++countWords[word] || 1;
+        return countWords;
+    }, {});
+    return countedWords;
 }
 function getStringSearchParameter(parameter){ //this is how string parameters are captured
     var userChoice = prompt("Would you like to search for " + parameter + "?", "yes or no").toLowerCase();
@@ -402,4 +429,10 @@ function narrowDownResults(searchResults, people){ //this function allows for th
         userChoice = searchResults[0];
     }
     return userChoice;
+}
+function getPersonInfo(person){
+    var trait;
+    for(trait in person){
+        console.log(person.trait);
+    }
 }
