@@ -1,9 +1,5 @@
 "use strict"
-/*
-Build all of your functions for displaying and gathering information below (GUI).
-*/
 
-// app is the function called to start the entire application
 function app(people){
   var person;
   var searchResult;
@@ -15,46 +11,36 @@ function app(people){
     case 'no':
         searchResult = searchByTrait(people);
         person = searchResult;
-
     break;
     default:
-    app(people); // restart app
+    app(people);
     break;
-
   }
   mainMenu(person, people);
-
 }
-
-// Menu function to call once you find who you are looking for
 function mainMenu(person, people){
-
-  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
-
-  if(!person){
-    alert("Could not find that individual.");
-    return app(people); // restart
-  }
-
-  var displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
-
-  switch(displayOption){
-    case "info":
-        getPersonInfo(person);
-    break;
-    case "family":
-        getPersonFamily(person, people);
-    break;
-    case "descendants":
-        getdescendants(person, people);
-    break;
-    case "restart":
-    app(people); // restart
-    break;
-    case "quit":
-    return; // stop execution
-    default:
-    return mainMenu(person, people); // ask again
+    if(!person){
+        alert("Could not find that individual.");
+        return app(people);
+    }
+    var displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+    switch(displayOption){
+        case "info":
+            getPersonInfo(person);
+        break;
+        case "family":
+            getPersonFamily(person, people);
+        break;
+        case "descendants":
+            getdescendants(person, people);
+        break;
+        case "restart":
+            app(people);
+        break;
+        case "quit":
+            return;
+        default:
+            return mainMenu(person, people);
   }
 }
 
@@ -243,28 +229,24 @@ function displayPeople(people){
   }).join("\n"));
 }
 
-function displayPerson(person){
+/*function displayPerson(person){
   // print all of the information about a person:
   // height, weight, age, name, occupation, eye color.
   var personInfo = "First Name: " + person.firstName + "\n";
   personInfo += "Last Name: " + person.lastName + "\n";
   // TODO: finish getting the rest of the information to display
   alert(personInfo);
-}
-
-// function that prompts and validates user input
+}*/
 function promptFor(question, valid){
   do{
     var response = prompt(question).trim();
   } while(!response || !valid(response));
   return response;
 }
-
 // helper function to pass into promptFor to validate yes/no answers
 function yesNo(input){
   return input.toLowerCase() == "yes" || input.toLowerCase() == "no";
 }
-
 // helper function to pass in as default promptFor validation
 function chars(input){
   return true; // default validation only
@@ -320,14 +302,14 @@ function checkSearchParameters(searchParameters){ //this function checks if enou
     var listedSearchParameters = Object.values(searchParameters);
     var count;
     count = wordCount(listedSearchParameters);
-    if(count["not applicable"] > 3) {
+    if(count["not applicable"] > 3) {   // if more than three are filled as not applicable the user is reset
         return false;
     }
     else{
         return true;
     }
 }
-function wordCount(words) {
+function wordCount(words) { //this function counts the amount of times a parameter is repeated
     var countedWords;       
     countedWords = words.reduce( (countWords, word) => {
         countWords[word] = ++countWords[word] || 1;
@@ -433,18 +415,18 @@ function searchByParentId(identification, people){ //this function filters peopl
         }
     }
     if (descendantsdescendants){
-    descendants.push(descendantsdescendants);
+    descendants = descendants.concat(descendantsdescendants);
     }
     return descendants;
 }
 function reportDescendants(descendants, person){ //this function reports if descendants are found in alert boxes
     var descendantsNames
-    descendantsNames = getNames(descendants);
+    descendantsNames = getNamesWithLinebreaks(descendants);
     if (!descendants[0]) { //checks if there are descendants
         alert(person.firstName + ' ' + person.lastName + " has no descendants on file.");
     }
     else{
-        alert(person.firstName + ' ' + person.lastName + " has descendants: " + descendantsNames);
+        alert(person.firstName + ' ' + person.lastName + " has descendants:\n" + descendantsNames);
     }
     return descendants;
 }
@@ -454,6 +436,14 @@ function getNames(selectedGroup){ //this function gathers names for alert boxes
         return element.firstName + " " + element.lastName
     });
     groupNames = groupNames.join("; ");
+    return groupNames;
+}
+function getNamesWithLinebreaks(selectedGroup){ //this function gathers names for alert boxes
+    var groupNames;
+    groupNames = selectedGroup.map(function(element){
+        return element.firstName + " " + element.lastName
+    });
+    groupNames = groupNames.join(";\n");
     return groupNames;
 }
 function narrowDownResults(searchResults, people){ //this function allows for the user to select one out of a list of search results
@@ -470,12 +460,12 @@ function narrowDownResults(searchResults, people){ //this function allows for th
     }
     return userChoice;
 }
-function getPersonInfo(person){
+function getPersonInfo(person){ //this function displays found persons info
     var personInfo;
     personInfo = sortInfo(person);
-    alert("Found person information: " + personInfo);
+    alert("Found person information:\n" + personInfo);
 }
-function sortInfo(person){
+function sortInfo(person){ //this function organizes info for getPersonInfo
     var trait;
     var personInfo = [];
     var traitValue;
