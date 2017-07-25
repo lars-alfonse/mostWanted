@@ -79,24 +79,13 @@ function getPersonFamily(person, people) {
                 return false;
             }
         })
-        var n;
-        var counter = 0;
-        for (n in personWithParents) {
-            if (counter === personWithParents.length-one && counter !== zero) {
-                parentsName += " and " + personWithParents[n].firstName + " ";
-                parentsName += personWithParents[n].lastName + ".";
-            } else {
-                parentsName += personWithParents[n].firstName + " ";
-                parentsName += personWithParents[n].lastName;
-            }
-        counter++;
-        }
+        parentsName = getNames(personWithParents);
         alert("The person parent: " + parentsName);
         getSiblings(personParentsArray, personId, people);
     } else {
         alert("The person doesn't have any parents");
     }
-        
+    getCurrentSpouse(person, people);    
 }
 
 /*
@@ -120,29 +109,43 @@ function getSiblings(personParentsArray, personId, people) {
                     return false;
                 }
             })
-            for(var j = 0; j<temporarySiblings.length; j++){
+            for(var j = 0; j < temporarySiblings.length; j++){
                 siblings.push(temporarySiblings[j]);
 
             }
     }
-    var n;
-    var counter = 0;
     var siblingsName = "";
     if (siblings.length !== zero) {
-        for(n in siblings) {
-            if (counter === siblings.length-one && counter !== zero) {
-                    siblingsName += " and " + siblings[n].firstName + " ";
-                    siblingsName += siblings[n].lastName + ".";
-                } else {
-                    siblingsName += siblings[n].firstName + " ";
-                    siblingsName += siblings[n].lastName;
-                }
-            counter++;
-        }
+        siblingsName = getNames(siblings);
         alert("Siblings names: " + siblingsName);
     } else {
         alert("Person doesn't have siblings");
     }
+}
+
+/*
+The function will test if the person has a sopouse and 
+loop to find the spounse then output the results. 
+*/
+function getCurrentSpouse(person, people) {
+    var isNull = null;
+    var personSpouse = person.currentSpouse;
+    var spouseName = "";
+    var spouse;
+    if (personSpouse !== isNull) {
+        spouse = people.filter(function(element){
+            if (personSpouse === element.id) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        spouseName = getNames(spouse);
+        alert("The person current spouse is: " + spouseName);
+    } else {
+        alert("Person doesn't have a spouse.");
+    }
+
 }
 
 
