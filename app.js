@@ -5,22 +5,24 @@ Build all of your functions for displaying and gathering information below (GUI)
 
 // app is the function called to start the entire application
 function app(people){
-    var person;
-
-    var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
-    switch(searchType){
+  var person;
+  var searchResult;
+  var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+  switch(searchType){
     case 'yes':
         person = searchByName(people);
     break;
     case 'no':
-        person = searchByTrait(people);
+        searchResult = searchByTrait(people);
+        person = searchResult[0];
+
     break;
     default:
-        app(people); // restart app
+    app(people); // restart app
     break;
 
-    }
-    mainMenu(person, people);
+  }
+  mainMenu(person, people);
 
 }
 
@@ -56,55 +58,46 @@ function mainMenu(person, people){
   }
 }
 
+/*
+The function will find if the person has any parents, collect the their parents object
+then output the parents first and last name
+*/
 function getPersonFamily(person, people) {
     var zero = 0;
+    var one = 1;
     var parentsName = "";
-    var personParents = [];
+    var personWithParents = [];
     var parentsArray = person.parents;
     if (parentsArray.length !== zero) {
-        personParents = people.filter(function(element) {
-            if(parentsArray[0] === element.id){
+        personWithParents = people.filter(function(element) {
+            if(parentsArray[zero] === element.id){
                 return true;
-            } else if (parentsArray[1] === element.id) {
+            } else if (parentsArray[one] === element.id) {
                 return true;
             } else {
                 return false;
             }
         })
         var n;
-        for (n in personParents) {
-            parentsName += personParents[n].firstName;
-            parentsName += personParents[n].lastName;
+        var counter = 0;
+        for (n in personWithParents) {
+            if (counter === personWithParents.length-one && counter !== zero) {
+                parentsName += " and " + personWithParents[n].firstName + " ";
+                parentsName += personWithParents[n].lastName + ".";
+                alert("The person parent: " + parentsName);
+            } else {
+                parentsName += personWithParents[n].firstName + " ";
+                parentsName += personWithParents[n].lastName;
+            }
+        counter++;
         }
     } else {
         alert("The person doesn't have any parents");
     }
-
-    /*
-    var parentsName = "";
-    var parentsArray = person[0].parents;
-    if (parentsArray.length === 0) {
-        alert("the person doesn't have any parents");
-    } else {
-        for (var i = 0; i < parentsArray.length; i++) {
-            for (var n = 0; n < people.length; n++) {
-                if(parentsArray[i] === people[n].id) {
-                    if(i === parentsArray.length-1 && i !== 0) {
-                        parentsName += " and " + people[n].firstName + " ";
-                        parentsName += people[n].lastName + ".";
-                    } else {
-                        parentsName += people[n].firstName + " ";
-                        parentsName += people[n].lastName;
-                }
-            }
-        }    
-    }
-    alert("Parents Name: " + parentsName);
-    getSiblings(parentsArray, people);  
-    } */      
+    getSiblings(parentsArray, people);    
 }
 
-/*
+
 function getSiblings(parentsArray, people) {
     var siblings = []
     for (var i = 0; i < parentsArray.length; i++) {
@@ -118,7 +111,7 @@ function getSiblings(parentsArray, people) {
     }
     alert(siblings[0].firstName + " " + siblings[0].lastName);
 }
-*/
+
 
 function searchByName(people){
   var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
@@ -132,7 +125,7 @@ function searchByName(people){
     }
   })
   try{
-    console.log(searchResults[0].firstName + " " + searchResults[0].lastName);
+   // alert(searchResults[0].firstName + " " + searchResults[0].lastName);
     var person = searchResults[0];
     return person;
   }
@@ -183,7 +176,6 @@ function searchByTrait(people){
     peopleWithAge = getAge(people)
     searchParameters = getTraitSearchParameters();
     searchResults = searchTraitFilters(searchParameters, people);
-    searchResults = narrowDownResults(searchResults, people);
     return searchResults;
 
 }
