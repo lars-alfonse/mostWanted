@@ -5,24 +5,22 @@ Build all of your functions for displaying and gathering information below (GUI)
 
 // app is the function called to start the entire application
 function app(people){
-  var person;
-  var searchResult;
-  var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
-  switch(searchType){
+    var person;
+
+    var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+    switch(searchType){
     case 'yes':
         person = searchByName(people);
     break;
     case 'no':
-        searchResult = searchByTrait(people);
-        person = searchResult[0];
-
+        person = searchByTrait(people);
     break;
     default:
-    app(people); // restart app
+        app(people); // restart app
     break;
 
-  }
-  mainMenu(person, people);
+    }
+    mainMenu(person, people);
 
 }
 
@@ -184,6 +182,7 @@ function searchByTrait(people){
     people = getAge(people)
     searchParameters = getTraitSearchParameters();
     searchResults = searchTraitFilters(searchParameters, people);
+    searchResults = narrowDownResults(searchResults, people);
     return searchResults;
 
 }
@@ -282,4 +281,24 @@ function subtractDates(dob){
     age = Math.abs(currentDate.getTime() - birthday.getTime());
     age = Math.floor(age / 31556952000);
     return age;
+}
+function getDecendents(person, People){
+
+}
+function narrowDownResults(searchResults, people){
+    var resultNames;
+    var userChoice;
+    if (searchResults.length > 1){
+        resultNames = searchResults.map(function(element){
+            return element.firstName + ", " + element.lastName;
+    });
+        resultNames = resultNames.join("; ")
+        alert("Several people found please type the name of the individual you are searching for");
+        alert("People found: " + resultNames);
+        userChoice = searchByName(people);
+    }
+    else{
+        userChoice = searchResults[0];
+    }
+    return userChoice;
 }
