@@ -59,69 +59,105 @@ function mainMenu(person, people){
 }
 
 /*
-The function will find if the person has any parents, collect the their parents object
+The function will find if the person has any parents, collect their parents object
 then output the parents first and last name
 */
 function getPersonFamily(person, people) {
+    var parents = getPersonParents(person, people);
+    var siblings = getPersonSiblings(person, people);
+    var currentSpouse = getPersonCurrentSpouse(person, people);
+    var children = getPersonChildren(person, people); 
+
+    outputPersonFamilyResults(person, parents, siblings, currentSpouse, children);   
+}
+
+function getPersonParents(person, people) {
     var zero = 0;
     var one = 1;
-    var parentsName = "";
-    var personId = person.id;
+    var parentsName = "";   
     var personWithParents = [];
     var personParentsArray = person.parents;
     if (personParentsArray.length !== zero) {
-        personWithParents = people.filter(function(element) {
-            if(personParentsArray[zero] === element.id){
-                return true;
-            } else if (personParentsArray[one] === element.id) {
-                return true;
-            } else {
-                return false;
-            }
-        })
+        personWithParents = loopingForPersonWithParents(personParentsArray, people);
         parentsName = getNames(personWithParents);
-        alert("The person's parent(s): " + parentsName);
-        getPersonSiblings(personParentsArray, personId, people);
     } else {
-        alert("The person doesn't have any parents");
-    }
-    getPersonCurrentSpouse(person, people);
-    getPersonChildren(person, people);    
+        parentsName = "The person doesn't have any parents";
+    } 
+    return parentsName;
+}
+
+/*
+The function will loop to full the person's parents data.
+*/
+function loopingForPersonWithParents(personParentsArray, people) {
+    var zero = 0;
+    var one = 1;
+    var personWithParents = [];
+    personWithParents = people.filter(function(element) {
+        if(personParentsArray[zero] === element.id){
+            return true;
+        } else if (personParentsArray[one] === element.id) {
+            return true;
+        } else {
+             return false;
+        }
+    })
+    return personWithParents;
 }
 
 /*
 the function will loop to find the person siblings and output the results
 */
-function getPersonSiblings(personParentsArray, personId, people) {
-    var siblings = []
+function getPersonSiblings(person, people) {
     var zero = 0;
     var one = 1;
-
+    var siblingsName;
+    var personParentsArray = person.parents;
+    var siblings = []
     for (var i = 0; i < personParentsArray.length; i++) {
-            var temporarySiblings = people.filter(function(element){
-                if(personParentsArray[i] === element.parents[zero] || personParentsArray[i] === element.parents[one]) {
-                    if (siblings.includes(element) || personId === element.id) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            })
-            for(var j = 0; j < temporarySiblings.length; j++){
-                siblings.push(temporarySiblings[j]);
-
-            }
+        var temporarySiblings = loopingForPersonSiblings(personParentsArray[i], siblings, person, people);
+        for(var j = 0; j < temporarySiblings.length; j++){
+            siblings.push(temporarySiblings[j]);
+        }
     }
+    siblingsName = outputPersonSiblings(siblings);
+    return siblingsName;
+} 
+ 
+/*
+The function will loop to find the person siblings and return the results
+*/
+function loopingForPersonSiblings(personParentsArray, siblings, person, people) {
+    var zero = 0;
+    var one = 1;
+    var personId = person.id;
+    var temporarySiblings = people.filter(function(element){
+        if(personParentsArray === element.parents[zero] || personParentsArray === element.parents[one]) {
+            if (siblings.includes(element) || personId === element.id) {
+                return false;
+            } else {
+                return true;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    })
+    return temporarySiblings;
+}
+
+/*
+The function will output the person's siblings
+*/
+function outputPersonSiblings(siblings) {
+    var zero = 0;
     var siblingsName = "";
     if (siblings.length !== zero) {
         siblingsName = getNames(siblings);
-        alert("Siblings names: " + siblingsName);
     } else {
-        alert("Person doesn't have siblings");
+        siblingsName = "Person doesn't have siblings";
     }
+    return siblingsName;
 }
 
 /*
@@ -142,11 +178,10 @@ function getPersonCurrentSpouse(person, people) {
             }
         })
         spouseName = getNames(spouse);
-        alert("The person's current spouse is: " + spouseName);
     } else {
-        alert("Person doesn't have a spouse.");
+        spouseName = "Person doesn't have a spouse.";
     }
-
+    return spouseName;
 }
 
 /*
@@ -167,10 +202,15 @@ function getPersonChildren(person, people) {
     })
     if (children.length !== zero) {
         childrenNames = getNames(children);
-        alert("The person's children: " + childrenNames);
     } else {
-        alert("The person doesn't have any children");
+        childrenNames = "The person doesn't have any children";
     }
+    return childrenNames;
+}
+
+function outputPersonFamilyResults(person, parents, siblings, currentSpouse, children) {
+    alert(person.firstName + " " + person.lastName + "\n \n Parents: \n    " + parents + "\n \n Siblings: \n    " + siblings 
+            + "\n \n Current Spouse: \n    " + currentSpouse + "\n \n Children: \n    " + children);
 }
 
 function searchByName(people){
