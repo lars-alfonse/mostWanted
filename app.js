@@ -5,22 +5,24 @@ Build all of your functions for displaying and gathering information below (GUI)
 
 // app is the function called to start the entire application
 function app(people){
-    var person;
-
-    var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
-    switch(searchType){
+  var person;
+  var searchResult;
+  var searchType = promptFor("Do you know the name of the person you are looking for? Enter 'yes' or 'no'", yesNo).toLowerCase();
+  switch(searchType){
     case 'yes':
         person = searchByName(people);
     break;
     case 'no':
-        person = searchByTrait(people);
+        searchResult = searchByTrait(people);
+        person = searchResult[0];
+
     break;
     default:
-        app(people); // restart app
+    app(people); // restart app
     break;
 
-    }
-    mainMenu(person, people);
+  }
+  mainMenu(person, people);
 
 }
 
@@ -92,32 +94,10 @@ function getPersonFamily(person, people) {
     } else {
         alert("The person doesn't have any parents");
     }
-
-    /*
-    var parentsName = "";
-    var parentsArray = person[0].parents;
-    if (parentsArray.length === 0) {
-        alert("the person doesn't have any parents");
-    } else {
-        for (var i = 0; i < parentsArray.length; i++) {
-            for (var n = 0; n < people.length; n++) {
-                if(parentsArray[i] === people[n].id) {
-                    if(i === parentsArray.length-1 && i !== 0) {
-                        parentsName += " and " + people[n].firstName + " ";
-                        parentsName += people[n].lastName + ".";
-                    } else {
-                        parentsName += people[n].firstName + " ";
-                        parentsName += people[n].lastName;
-                }
-            }
-        }    
-    }
-    alert("Parents Name: " + parentsName);
-    getSiblings(parentsArray, people);  
-    } */      
+    getSiblings(parentsArray, people);    
 }
 
-/*
+
 function getSiblings(parentsArray, people) {
     var siblings = []
     for (var i = 0; i < parentsArray.length; i++) {
@@ -131,7 +111,7 @@ function getSiblings(parentsArray, people) {
     }
     alert(siblings[0].firstName + " " + siblings[0].lastName);
 }
-*/
+
 
 function searchByName(people){
   var firstName = promptFor("What is the person's first name?", chars).toLowerCase();
@@ -145,7 +125,7 @@ function searchByName(people){
     }
   })
   try{
-    console.log(searchResults[0].firstName + " " + searchResults[0].lastName);
+   // alert(searchResults[0].firstName + " " + searchResults[0].lastName);
     var person = searchResults[0];
     return person;
   }
@@ -195,7 +175,6 @@ function searchByTrait(people){
     people = getAge(people)
     searchParameters = getTraitSearchParameters();
     searchResults = searchTraitFilters(searchParameters, people);
-    searchResults = narrowDownResults(searchResults, people);
     return searchResults;
 
 }
@@ -294,24 +273,4 @@ function subtractDates(dob){
     age = Math.abs(currentDate.getTime() - birthday.getTime());
     age = Math.floor(age / 31556952000);
     return age;
-}
-function getDecendents(person, People){
-
-}
-function narrowDownResults(searchResults, people){
-    var resultNames;
-    var userChoice;
-    if (searchResults.length > 1){
-        resultNames = searchResults.map(function(element){
-            return element.firstName + ", " + element.lastName;
-    });
-        resultNames = resultNames.join("; ")
-        alert("Several people found please type the name of the individual you are searching for");
-        alert("People found: " + resultNames);
-        userChoice = searchByName(people);
-    }
-    else{
-        userChoice = searchResults[0];
-    }
-    return userChoice;
 }
