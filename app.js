@@ -66,13 +66,14 @@ function getPersonFamily(person, people) {
     var zero = 0;
     var one = 1;
     var parentsName = "";
+    var personId = person.id;
     var personWithParents = [];
-    var parentsArray = person.parents;
-    if (parentsArray.length !== zero) {
+    var personParentsArray = person.parents;
+    if (personParentsArray.length !== zero) {
         personWithParents = people.filter(function(element) {
-            if(parentsArray[zero] === element.id){
+            if(personParentsArray[zero] === element.id){
                 return true;
-            } else if (parentsArray[one] === element.id) {
+            } else if (personParentsArray[one] === element.id) {
                 return true;
             } else {
                 return false;
@@ -84,32 +85,60 @@ function getPersonFamily(person, people) {
             if (counter === personWithParents.length-one && counter !== zero) {
                 parentsName += " and " + personWithParents[n].firstName + " ";
                 parentsName += personWithParents[n].lastName + ".";
-                alert("The person parent: " + parentsName);
             } else {
                 parentsName += personWithParents[n].firstName + " ";
                 parentsName += personWithParents[n].lastName;
             }
         counter++;
         }
+        alert("The person parent: " + parentsName);
+        getSiblings(personParentsArray, personId, people);
     } else {
         alert("The person doesn't have any parents");
     }
-    getSiblings(parentsArray, people);    
+        
 }
 
-
-function getSiblings(parentsArray, people) {
+/*
+the function will loop to find the person siblings and output the results
+*/
+function getSiblings(personParentsArray, personId, people) {
     var siblings = []
-    for (var i = 0; i < parentsArray.length; i++) {
-            siblings = people.filter(function(element){
-                if(parentsArray[i] === element.parents[0] || ){
+    var zero = 0;
+    var one = 1;
+
+    for (var i = 0; i < personParentsArray.length; i++) {
+            var temporarySiblings = people.filter(function(element){
+                if(personParentsArray[i] === element.parents[zero] || personParentsArray[i] === element.parents[one]) {
+                    if (siblings.includes(element) || personId === element.id) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                     return true;
                 } else {
                     return false;
                 }
             })
+            for(var j = 0; j<temporarySiblings.length; j++){
+                siblings.push(temporarySiblings[j]);
+
+            }
     }
-    alert(siblings[0].firstName + " " + siblings[0].lastName);
+    var n;
+    var counter = 0;
+    var siblingsName = "";
+    for(n in siblings) {
+        if (counter === siblings.length-one && counter !== zero) {
+                siblingsName += " and " + siblings[n].firstName + " ";
+                siblingsName += siblings[n].lastName + ".";
+            } else {
+                siblingsName += siblings[n].firstName + " ";
+                siblingsName += siblings[n].lastName;
+            }
+        counter++;
+    }
+    alert("Siblings names: " + siblingsName);
 }
 
 
