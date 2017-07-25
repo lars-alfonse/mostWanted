@@ -134,7 +134,7 @@ function searchByName(people){
     }
   })
   try{
-   // alert(searchResults[0].firstName + " " + searchResults[0].lastName);
+    console.log(searchResults[0].firstName + " " + searchResults[0].lastName);
     var person = searchResults[0];
     return person;
   }
